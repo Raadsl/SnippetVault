@@ -174,7 +174,6 @@ body {
 }
 
 .heading-container {
-  margin-top: 10%;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -194,7 +193,7 @@ body {
     display: flex;
   	flex-direction: column;
   	max-width: 600px;
-  	margin: 100px auto;
+  	margin: 10px auto;
   	margin-bottom: 0;
   }
 }
@@ -293,7 +292,7 @@ a.link-accent:hover {
   border-radius: 11px;
   border: 1px solid transparent;
   transition: 0.3s;
-  width: 100%;
+  width: 3=0%;
 }
 
 .btn-sm {
@@ -337,7 +336,7 @@ a.link-accent:hover {
 }
 
 .btn-outline-secondary {
-  background-color: var(--background-root);
+  background-color: var(--background-default);
   color: var(--foreground-default);
   border-color: var(--outline-dimmer);
 }
@@ -355,9 +354,9 @@ a.link-accent:hover {
 }
 
 .btn-red {
-  background-color: var(--accent-red-dimmer);
-  color: var(--foreground-default);
-  border-color: var(--accent-red-dimmer);
+  background-color: var(--accent-red-dimmer) !important;
+  color: var(--foreground-default) !important;
+  border-color: var(--accent-red-dimmer) !important;
 }
 
 .btn-red:hover {
@@ -1096,25 +1095,26 @@ h1 {
   font-size: 2rem;
   color: var(--foreground-dimmer);
 }
-
 #note-form {
+  background-color: var(--background-higher);
+  padding: 5px;
+  border-radius: 5px;
+}
+#snippet-form {
   background-color: var(--background-higher);
   padding: 10px;
   border-radius: 5px;
 }
-
 label {
   font-weight: bold;
   color: var(--foreground-dimmest);
 }
-
-input[type="text"] {
+input[type="text"], textarea {
   width: 100%;
   padding: 5px;
   border: 2px solid var(--outline-default);
   border-radius: 4px;
 }
-
 button {
   background-color: var(--accent-primary-default);
   color: var(--white);
@@ -1128,58 +1128,49 @@ button {
   cursor: pointer;
   border-radius: 5px;
 }
-
 button:hover {
   background-color: var(--accent-primary-stronger);
 }
-
 #get-notes {
   margin-top: 10px;
 }
-
 ul {
   list-style-type: none;
   padding: 1px;
-
-
 }
-
 li {
   padding: 5px;
   margin-bottom: 5px;
   border: 1px solid var(--outline-dimmer);
   border-radius: 5px;
 }
-
 .delete-note {
   background-color: var(--accent-negative-dimmer);
   float: right;
 }
 .delete-snippet {
-background-color: var(--accent-negative-dimmer);
+  background-color: var(--accent-negative-dimmer);
 }
-
-.delete-note:hover, .delete-snippet:hover {
+.delete-note:hover,
+.delete-snippet:hover {
   background-color: var(--accent-negative-default);
 }
 .delete-note {
   position: relative;
   top: -6px;
 }
-
 .note-text {
   cursor: pointer;
 }
-
 .main-heading {
-  font-size: 45px;
   font-weight: bold;
   font-family: 'IBM Plex Sans', sans-serif;
   color: var(--foreground-default);
   text-shadow: 0 0 10px var(--accent-primary-default);
   margin-bottom: 10px;
+  font-size: 1.5rem;
+  margin: 0;
 }
-
 .context-menu {
   display: none;
   position: absolute;
@@ -1188,22 +1179,18 @@ background-color: var(--accent-negative-dimmer);
   padding: 0;
   z-index: 1000;
 }
-
 .context-menu ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
-
 .context-menu li {
   padding: 5px 10px;
   cursor: pointer;
 }
-
 .context-menu li:hover {
   background-color: var(--background-root);
 }
-
 .edit-snippet-modal {
   position: fixed;
   z-index: 1001;
@@ -1216,7 +1203,6 @@ background-color: var(--accent-negative-dimmer);
   align-items: center;
   justify-content: center;
 }
-
 .edit-snippet-modal-content {
   background-color: var(--background-higher);
   padding: 20px;
@@ -1224,16 +1210,13 @@ background-color: var(--accent-negative-dimmer);
   width: 80%;
   max-width: 600px;
 }
-
 .hidden {
   display: none;
 }
-
 .snippet-title {
   font-weight: bold;
   cursor: pointer;
 }
-
 .snippet-code {
   background-color: var(--background-root);
   padding: 5px;
@@ -1241,11 +1224,115 @@ background-color: var(--accent-negative-dimmer);
   cursor: pointer;
   white-space: pre-wrap;
   word-wrap: break-word;
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
+  border-color: var(--accent-primary-dimmer);
+  border: 2px solid var(--outline-default);
+  width: 100%;
 }
-
 [data-done="true"] {
   text-decoration: line-through;
   color: #999;
+}
+pre.hljs {
+  background-color: var(--background-root);
+}
+pre.hljs {
+  color: var(--foreground-highest);
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--foreground-dimmer);
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-name {
+  color: var(--accent-primary-default);
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: var(--foreground-default);
+}
+.hljs-string,
+.hljs-regexp {
+  color: var(--foreground-default);
+}
+.hljs-number {
+  color: var(--foreground-default);
+}
+.hljs-meta,
+.hljs-meta .hljs-keyword {
+  color: var(--foreground-default);
+}
+.hljs-title,
+.hljs-attr {
+  color: var(--foreground-default);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs {
+  background-color: inherit;
+}
+#snippet-search {
+  margin-bottom: 10px;
+}
+.checkbox-container {
+  justify-content: center;
+}
+.click-to-copy {
+  color: var(--foreground-dimmest);
+  font-size: 12px;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 1rem;
+  position: sticky; /* Change from 'fixed' to 'sticky' */
+  top: 0;
+  background-color: var(--background-default);
+  z-index: 100;
+}
+.button-container {
+  margin-left: auto;
+}
+.content-container {
+  margin-top: 0;
+  padding: 1rem;
+}
+
+.instructions-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.instructions-modal-content {
+  background-color: var(--background-default);
+  margin: 15% auto;
+  color: var(--foreground-default);
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.instructions-modal.hidden {
+  display: none;
+}
+.list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

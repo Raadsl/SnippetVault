@@ -6,11 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReplitNotes</title>
     <link href="/style.css" rel="stylesheet" type="text/css" />
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@replit/extensions/dist/index.global.js"></script>
+    <script src="https://unpkg.com/@replit/extensions@1.7.2/dist/index.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
   <script type='module'>
     let firstTheme = true
+    let file = await replit.session.getActiveFile()
+    let fileExt = null
     try {
        await replit.init({ permissions: []})
        async function setTheme() {
@@ -26,13 +29,12 @@
           await replit.messages.showNotice("Theme updated successfully for ReplNotes", 2000)
          }
          firstTheme = false
-        }
+        } 
         await setTheme()
         await replit.themes.onThemeChange(setTheme)
 
     } catch(err) {
         await replit.debug.error("Error with setting theme.", err);
-
       document.body.innerHTML = "Not opened as extension"
     }
     async function getUserSlug() {
@@ -45,8 +47,8 @@
       const currentUser = await replit.data.currentUser();
       return `${currentUser.user.username}`;
     }
-
 (async () => {
+  
   function updateNotes() {
     const notes = JSON.parse(localStorage.getItem("notes") || "[]");
     const notesList = $("#notes-list");
@@ -221,6 +223,12 @@
       if (newCode && newCode !== currentCode) {
         const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
         const snippetIndex = snippets.findIndex((snippet) => snippet.id === snippetId);
+        const detectedLanguageResult = hljs.highlightAuto(newCode);
+        const detectedLanguage = detectedLanguageResult.language || 'txt';
+        snippets[snippetIndex].code = newCode;
+        snippets[snippetIndex].language = detectedLanguage; 
+        snippets[snippetIndex].code = newCode;
+        snippets[snippetIndex].language = detectedLanguage; // Add this line
         if (snippetIndex > -1) {
           snippets[snippetIndex].code = newCode;
           localStorage.setItem("snippets", JSON.stringify(snippets));
@@ -237,15 +245,30 @@
       editSnippetModal.addClass("hidden");
     });
   }
-
+function mapFileExtensionToLanguage(fileExt) {
+  const extensionToLanguageMap = {
+    'js': 'javascript',
+    'py': 'python',
+    'java': 'java',
+    'cpp': 'cpp',
+    'c': 'c',
+    'html': 'xml', //it doesnt detect html for some reason
+    'css': 'css',
+    'xml': 'xml'
+    //!TODO add more
+  };
+  return extensionToLanguageMap[fileExt] || 'txt';
+}
   $("#snippet-form").submit(function (event) {
     event.preventDefault();
     const title = $("#snippet-title").val();
     const code = $("#snippet-code").val();
+    const detectedLanguageResult = hljs.highlightAuto(code); 
+    const detectedLanguage = detectedLanguageResult.language || 'txt';
     $("#snippet-title").val("");
     $("#snippet-code").val("");
     const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
-    snippets.push({ user_slug, title, code, id: generateSnippetId() });
+    snippets.push({ user_slug, title, code, language: detectedLanguage, id: generateSnippetId() });
     localStorage.setItem("snippets", JSON.stringify(snippets));
     displaySnippets();
   });
@@ -260,6 +283,11 @@
   });
 
    function displaySnippets() {
+      function highlightCodeSnippets() {
+        document.querySelectorAll("pre.hljs").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
       const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
       const snippetsList = $("#snippets-list");
       snippetsList.empty();
@@ -278,8 +306,10 @@
       snippets.forEach(function (snippet) {
         const listItem = $('<li></li>');
         const snippetTitle = $('<span class="snippet-title" data-id="' + snippet.id + '"></span>');
-        snippetTitle.text(snippet.title);
-        const snippetCode = $('<pre class="snippet-code" data-id="' + snippet.id + '"></pre>');
+        snippetTitle.text(snippet.title).append($('<span class="click-to-copy"> ∙ Click the code to copy it</span>'));
+        
+        const snippetCode = $('<pre class="snippet-code hljs" data-id="' + snippet.id + '" data-language="' + snippet.language + '"></pre>');
+
         snippetCode.text(snippet.code);
         snippetTitle.on("contextmenu", function (e) {
           e.preventDefault();
@@ -289,12 +319,17 @@
           e.preventDefault();
           handleSnippetCodeRightClick(e, $(this));
         });
-        listItem.append(snippetTitle);
-        listItem.append(snippetCode);
+        const snippetContentWrapper = $('<div class="snippet-content-wrapper"></div>');
+        snippetContentWrapper.append(snippetTitle);
+        snippetContentWrapper.append(snippetCode);
+        listItem.append(snippetContentWrapper);
         listItem.append('<button class="delete-snippet align-middle" data-id="' + snippet.id + '">Delete</button>');
         listItem.append('<button class="toggle-pin-snippet align-middle" data-id="' + snippet.id + '">' + (snippet.pinned ? 'Unpin' : 'Pin') + '</button>'); // Add the pin button
         snippetsList.append(listItem);
+        highlightCodeSnippets();
+        filterSnippets()
       });
+     
     }
 
   $("#snippets-list").on('click', '.toggle-pin-snippet', function() {
@@ -327,22 +362,7 @@
   });
 });
 
-  function filterSnippets() {
-    const searchText = $("#snippet-search").val().toLowerCase();
 
-    $("#snippets-list li").each(function () {
-      const snippetTitle = $(this).find(".snippet-title").text().toLowerCase();
-      const snippetCode = $(this).find(".snippet-code").text().toLowerCase();
-
-      if (snippetTitle.includes(searchText) || snippetCode.includes(searchText)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
-  }
-
-  $("#snippet-search").on("input", filterSnippets);
 
   displaySnippets();
 
@@ -355,7 +375,7 @@
       $("#notes-list").addClass('hidden');
       $("#snippet-form").removeClass('hidden');
       $("#snippets-list").removeClass('hidden');
-      $("#snippet-search").removeClass('hidden');
+      $("#search-options").removeClass('hidden');
     } else {
       $(this).text('Switch to Snippet Manager');
       $("#mode").text("Notes")
@@ -363,20 +383,67 @@
       $("#notes-list").removeClass('hidden');
       $("#snippet-form").addClass('hidden');
       $("#snippets-list").addClass('hidden');
-      $("#snippet-search").addClass('hidden');
+      $("#search-options").addClass('hidden');
     }
   });
+
+
+async function filterSnippets() {
+  file = await replit.session.getActiveFile()
+  if(file !== null) {
+    fileExt = file.split('.').pop();
+  }
+  const searchText = $("#snippet-search").val().toLowerCase();
+  const filterLanguage = $("#snippet-filter-language").is(":checked");
+
+  $("#snippets-list li").each(function () {
+    const snippetTitle = $(this).find(".snippet-title").text().toLowerCase();
+    const snippetCode = $(this).find(".snippet-code").text().toLowerCase();
+    const snippetLanguage = $(this).find(".snippet-code").data("language");
+    const currentlang = mapFileExtensionToLanguage(fileExt)
+    const matchesSearch = snippetTitle.includes(searchText) || snippetCode.includes(searchText);
+    const matchesLanguage = !filterLanguage || snippetLanguage === currentlang;
+
+    if (matchesSearch && matchesLanguage) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+  
+$("#snippet-search").on("input", filterSnippets);
+$("#snippet-filter-language").on("change", filterSnippets); 
+replit.session.onActiveFileChange(filterSnippets)
 })();
+
+$("#controls-explanation-btn").on("click", function () {
+  $("#instructions-modal").removeClass("hidden");
+});
+$("#instructions-modal-close-btn").on("click", function () {
+  $("#instructions-modal").addClass("hidden");
+});
+$(document).on("click", function (event) {
+  // Check if the click target is outside the instructions-modal-content
+  if (
+    !$(event.target).closest(".instructions-modal-content").length &&
+    !$(event.target).is("#controls-explanation-btn")
+  ) {
+    $("#instructions-modal").addClass("hidden");
+  }
+});
+
     </script>
 </head>
 <body>
-  <button id="mode-switch-btn" class="btn btn-blue">Switch to Snippet Manager</button>
-  <div class="heading-container">
-    <div class="heading">
-      <h1 class="main-heading">ReplNotes</h1>
-      <p><span id='mode'>Notes</span> for <span id="slughere"></span></p>
+ <div class="header-row">
+    <a href='/'><h1 class="main-heading"title='Made by @Raadsel'>ReplNotes</h1></a>
+    <div class="button-container">
+      <button id="mode-switch-btn" class="btn btn-sm btn-primary">Switch to Snippet Manager</button>
+      <button id="controls-explanation-btn" class="btn btn-sm btn-outline-secondary">Controls Explanation</button>
     </div>
   </div>
+  <hr>
   <section class="content-container">
     <form id="note-form">
       <div>
@@ -400,10 +467,14 @@
         <button class="btn btn-primary" type="submit">Store Snippet</button>
       </div>
     </form>
-    <hr>
-    <div>
-        <input class='hidden' type="text" id="snippet-search" placeholder="Search snippets..." />
+    <div class='hidden' id='search-options'>
+      <input type="text" id="snippet-search" placeholder="Search snippets..." />
+      <label class="checkbox-container">Filter by active language
+        <input id='snippet-filter-language' type="checkbox">
+        <span class="checkbox-mark"></span>
+      </label>
     </div>
+    <hr>
     <ul id="notes-list" class="list-container"></ul>
     <ul id="snippets-list" class="list-container hidden"></ul>
   </section>
@@ -421,24 +492,19 @@
     <button id="edit-snippet-cancel-btn">Cancel</button>
   </div>
 </div>
+    <div id="instructions-modal" class="instructions-modal hidden">
+  <div class="instructions-modal-content">
+    <h2>Controls</h2>
+    <ul>
+      <li>To view the snippet manager, click on the button left from here</li>
+      <li>Right-click on a note/snippet to edit</li>
+      <li>Click on the code of a snippet to copy its code</li>
+      <li>Click on the text of a note to mark it as done</li>
+      <li>Press the delete buttons to delete the item</li>
+      <li>If you pin a snippet it will stay on top</li>
+    </ul>
+    <button id="instructions-modal-close-btn">Close</button>
+  </div>
+</div>
 </body>
-  <script>
-    
-function filterSnippets() {
-  const searchText = $("#snippet-search").val().toLowerCase();
-
-  $("#snippets-list li").each(function () {
-    const snippetTitle = $(this).find(".snippet-title").text().toLowerCase();
-    const snippetCode = $(this).find(".snippet-code").text().toLowerCase();
-
-    if (snippetTitle.includes(searchText) || snippetCode.includes(searchText)) {
-      $(this).show();
-    } else {
-      $(this).hide();
-    }
-  });
-}
-
-$("#snippet-search").on("input", filterSnippets);
-  </script>
 </html>
