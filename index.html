@@ -35,7 +35,7 @@
 
     } catch(err) {
         await replit.debug.error("Error with setting theme.", err);
-      document.body.innerHTML = "Not opened as extension"
+      //document.body.innerHTML = "Not opened as extension"
     }
     async function getUserSlug() {
         const currentUser = await replit.data.currentUser();
@@ -49,28 +49,6 @@
     }
 (async () => {
   
-  function updateNotes() {
-    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-    const notesList = $("#notes-list");
-    notesList.empty();
-
-    notes.forEach(function (note) {
-      const listItem = $('<li></li>');
-      const noteText = $('<span class="note-text" data-id="' + note.id + '" data-done="' + note.done + '"></span>');
-      noteText.text(note.note);
-
-      listItem.append(noteText);
-      listItem.append('<button class="delete-note align-middle" data-id="' + note.id + '">Delete</button>');
-      notesList.append(listItem);
-
-      // Add the context menu event listener for each noteText
-      noteText.on("contextmenu", function (e) {
-        e.preventDefault();
-        handleNoteTextRightClick(e, $(this));
-      });
-    });
-  }
-
   function updateSnippets() {
     displaySnippets();
   }
@@ -86,39 +64,7 @@
   const user_slug = await getUserSlug();
   const user = await getUser();
 
-  $("#note-form").submit(function (event) {
-    event.preventDefault();
-    const note = $("#note").val();
-    $("#note").val("");
-    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-    notes.push({ user_slug, note, id: generateUniqueId() });
-    localStorage.setItem("notes", JSON.stringify(notes));
-    updateNotes();
-  });
-
   let firstime=true
-
-  $("#notes-list").on("click", ".note-text", function () {
-    const noteId = $(this).data("id");
-    const isDone = $(this).data("done");
-    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-    const noteIndex = notes.findIndex((note) => note.id === noteId);
-    if (noteIndex > -1) {
-      notes[noteIndex].done = !isDone;
-      localStorage.setItem("notes", JSON.stringify(notes));
-      updateNotes();
-    }
-  });
-
-  $("#notes-list").on("click", ".delete-note", function () {
-    const noteId = $(this).data("id");
-    if (confirm("Are you sure you want to delete this note? This cannot be undone.")) {
-      const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-      const filteredNotes = notes.filter((note) => note.id !== noteId);
-      localStorage.setItem("notes", JSON.stringify(filteredNotes));
-      updateNotes();
-    }
-  });
 
   function handleNoteTextRightClick(event, noteText) {
     event.preventDefault();
@@ -150,8 +96,6 @@
       }
     }
   }
-
-  updateNotes();
 
   // snippets  //
   function handleSnippetTitleRightClick(event, snippetTitle) {
@@ -247,6 +191,10 @@
   }
 function mapFileExtensionToLanguage(fileExt) {
   const extensionToLanguageMap = {
+    "jsx": "javascript",
+    "tsx": "javascript",
+    "cjs": "javascript",
+    "ts": "javascript",
     'js': 'javascript',
     'py': 'python',
     'java': 'java',
@@ -254,7 +202,11 @@ function mapFileExtensionToLanguage(fileExt) {
     'c': 'c',
     'html': 'xml', //it doesnt detect html for some reason
     'css': 'css',
-    'xml': 'xml'
+    'xml': 'xml',
+    "json": "swift",//also doesnt have json
+    "swift": "swift",
+    "md": "txt",
+    "svg": "xml"
     //!TODO add more
   };
   return extensionToLanguageMap[fileExt] || 'txt';
@@ -306,7 +258,7 @@ function mapFileExtensionToLanguage(fileExt) {
       snippets.forEach(function (snippet) {
         const listItem = $('<li></li>');
         const snippetTitle = $('<span class="snippet-title" data-id="' + snippet.id + '"></span>');
-        snippetTitle.text(snippet.title).append($('<span class="click-to-copy"> ∙ Click the code to copy it</span>'));
+        snippetTitle.text(snippet.title).append($('<span class="click-to-copy"> ∙ Click the code to copy it </span>'));
         
         const snippetCode = $('<pre class="snippet-code hljs" data-id="' + snippet.id + '" data-language="' + snippet.language + '"></pre>');
 
@@ -366,27 +318,6 @@ function mapFileExtensionToLanguage(fileExt) {
 
   displaySnippets();
 
-  $("#mode-switch-btn").on('click', function() {
-    const currentMode = $(this).text();
-    if (currentMode === 'Switch to Snippet Manager') {
-      $(this).text('Switch to Notes');
-      $("#mode").text("Snippets")
-      $("#note-form").addClass('hidden');
-      $("#notes-list").addClass('hidden');
-      $("#snippet-form").removeClass('hidden');
-      $("#snippets-list").removeClass('hidden');
-      $("#search-options").removeClass('hidden');
-    } else {
-      $(this).text('Switch to Snippet Manager');
-      $("#mode").text("Notes")
-      $("#note-form").removeClass('hidden');
-      $("#notes-list").removeClass('hidden');
-      $("#snippet-form").addClass('hidden');
-      $("#snippets-list").addClass('hidden');
-      $("#search-options").addClass('hidden');
-    }
-  });
-
 
 async function filterSnippets() {
   file = await replit.session.getActiveFile()
@@ -432,42 +363,79 @@ $(document).on("click", function (event) {
     $("#instructions-modal").addClass("hidden");
   }
 });
+$("#delete-all-data-btn").on("click", function () {
+  if (confirm("Are you sure you want to delete all the data? This action cannot be undone.")) {
+    localStorage.removeItem("notes")
+    localStorage.removeItem("snippets")
+    displaySnippets()
+    location.reload()
+  } else {
+    displaySnippets()
+  }
+})
 
+function exportSnippets() {
+  const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snippets));
+  const downloadAnchorNode = document.createElement("a");
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "replnotes_snippets.json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
+async function importSnippets() {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = ".json";
+  fileInput.onchange = async (event) => {
+    const file = event.target.files[0];
+    const fileContent = await file.text();
+    try {
+      const importedSnippets = JSON.parse(fileContent);
+      if (Array.isArray(importedSnippets)) {
+        localStorage.setItem("snippets", JSON.stringify(importedSnippets));
+        displaySnippets();
+        replit.messages.showNotice("Snippets imported successfully!", 2000);
+      } else {
+        replit.messages.showNotice("Invalid JSON file format.", 2000);
+      }
+    } catch (error) {
+      replit.messages.showNotice("Error importing snippets: " + error.message, 2000);
+    }
+  };
+  fileInput.click();
+}
+$("#export-snippets-btn").on("click", exportSnippets);
+$("#import-snippets-btn").on("click", importSnippets);
     </script>
 </head>
 <body>
  <div class="header-row">
     <a href='/'><h1 class="main-heading"title='Made by @Raadsel'>ReplNotes</h1></a>
     <div class="button-container">
-      <button id="mode-switch-btn" class="btn btn-sm btn-primary">Switch to Snippet Manager</button>
+      <button id="delete-all-data-btn" class="btn btn-sm btn-primary">Delete all snippets</button>
       <button id="controls-explanation-btn" class="btn btn-sm btn-outline-secondary">Controls Explanation</button>
+      
     </div>
   </div>
   <hr>
   <section class="content-container">
-    <form id="note-form">
-      <div>
-        <label for="note">Note:</label>
-        <input maxlength="1000" type="text" id="note" title="Don't share sensitive information" name="note" required>
-      </div>
-      <div>
-        <button class="btn btn-primary" type="submit">Store Note</button>
-      </div>
-    </form>
-    <form id="snippet-form" class="hidden">
+    <form id="snippet-form" class="">
       <div>
         <label for="snippet-title">Title:</label>
         <input style='width:100%' type="text" id="snippet-title" name="snippet-title" maxlength="120" required>
       </div>
       <div>
         <label for="snippet-code">Code:</label>
-        <textarea title="Don't share sensitive information" name="note" style='width:100%' id="snippet-code" name="snippet-code" rows="4" maxlength="7000" required></textarea>
+        <textarea title="Don't share sensitive information" name="note" style='width:100%' id="snippet-code" name="snippet-code" rows="4" maxlength="15000" required></textarea>
       </div>
       <div>
-        <button class="btn btn-primary" type="submit">Store Snippet</button>
+        <button class="btn btn-primary" type="submit" style='width:100%;'>Store Snippet</button>
       </div>
     </form>
-    <div class='hidden' id='search-options'>
+    <div id='search-options'>
       <input type="text" id="snippet-search" placeholder="Search snippets..." />
       <label class="checkbox-container">Filter by active language
         <input id='snippet-filter-language' type="checkbox">
@@ -475,8 +443,7 @@ $(document).on("click", function (event) {
       </label>
     </div>
     <hr>
-    <ul id="notes-list" class="list-container"></ul>
-    <ul id="snippets-list" class="list-container hidden"></ul>
+    <ul id="snippets-list" class="list-container"></ul>
   </section>
   <div id="context-menu" class="context-menu">
   <ul>
@@ -496,12 +463,13 @@ $(document).on("click", function (event) {
   <div class="instructions-modal-content">
     <h2>Controls</h2>
     <ul>
-      <li>To view the snippet manager, click on the button left from here</li>
-      <li>Right-click on a note/snippet to edit</li>
+      
+      <li>Right-click on a snippet to edit</li>
       <li>Click on the code of a snippet to copy its code</li>
-      <li>Click on the text of a note to mark it as done</li>
       <li>Press the delete buttons to delete the item</li>
       <li>If you pin a snippet it will stay on top</li>
+      <li>To import or export your snippets, press these buttons: <button id="export-snippets-btn" class="btn btn-sm btn-primary">Export Snippets</button>
+<button id="import-snippets-btn" class="btn btn-sm btn-primary">Import Snippets</button></li>
     </ul>
     <button id="instructions-modal-close-btn">Close</button>
   </div>
