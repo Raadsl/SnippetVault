@@ -1,0 +1,444 @@
+<!--Made by @Raadsel-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReplitNotes</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@replit/extensions/dist/index.global.js"></script>
+  <script type='module'>
+    let firstTheme = true
+    try {
+       await replit.init({ permissions: []})
+       async function setTheme() {
+        await replit.themes.getCurrentTheme().then(theme => {
+                for (const value in theme.values.global) {
+                    if (!value.startsWith('_')) {
+                        const cssVariableName = '--' + value.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+                        document.documentElement.style.setProperty(cssVariableName, theme.values.global[value])
+                    }
+                }
+            })
+         if(!firstTheme) {
+          await replit.messages.showNotice("Theme updated successfully for ReplNotes", 2000)
+         }
+         firstTheme = false
+        }
+        await setTheme()
+        await replit.themes.onThemeChange(setTheme)
+
+    } catch(err) {
+        await replit.debug.error("Error with setting theme.", err);
+
+      document.body.innerHTML = "Not opened as extension"
+    }
+    async function getUserSlug() {
+        const currentUser = await replit.data.currentUser();
+        const currentRepl = await replit.data.currentRepl();
+        $("#slughere").text(currentRepl.repl.slug)
+        return `${currentUser.user.username}/${currentRepl.repl.slug}`;
+    }
+    async function getUser() {
+      const currentUser = await replit.data.currentUser();
+      return `${currentUser.user.username}`;
+    }
+
+(async () => {
+  function updateNotes() {
+    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+    const notesList = $("#notes-list");
+    notesList.empty();
+
+    notes.forEach(function (note) {
+      const listItem = $('<li></li>');
+      const noteText = $('<span class="note-text" data-id="' + note.id + '" data-done="' + note.done + '"></span>');
+      noteText.text(note.note);
+
+      listItem.append(noteText);
+      listItem.append('<button class="delete-note align-middle" data-id="' + note.id + '">Delete</button>');
+      notesList.append(listItem);
+
+      // Add the context menu event listener for each noteText
+      noteText.on("contextmenu", function (e) {
+        e.preventDefault();
+        handleNoteTextRightClick(e, $(this));
+      });
+    });
+  }
+
+  function updateSnippets() {
+    displaySnippets();
+  }
+
+  function generateUniqueId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  }
+
+  function generateSnippetId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  }
+
+  const user_slug = await getUserSlug();
+  const user = await getUser();
+
+  $("#note-form").submit(function (event) {
+    event.preventDefault();
+    const note = $("#note").val();
+    $("#note").val("");
+    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+    notes.push({ user_slug, note, id: generateUniqueId() });
+    localStorage.setItem("notes", JSON.stringify(notes));
+    updateNotes();
+  });
+
+  let firstime=true
+
+  $("#notes-list").on("click", ".note-text", function () {
+    const noteId = $(this).data("id");
+    const isDone = $(this).data("done");
+    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+    const noteIndex = notes.findIndex((note) => note.id === noteId);
+    if (noteIndex > -1) {
+      notes[noteIndex].done = !isDone;
+      localStorage.setItem("notes", JSON.stringify(notes));
+      updateNotes();
+    }
+  });
+
+  $("#notes-list").on("click", ".delete-note", function () {
+    const noteId = $(this).data("id");
+    if (confirm("Are you sure you want to delete this note? This cannot be undone.")) {
+      const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+      const filteredNotes = notes.filter((note) => note.id !== noteId);
+      localStorage.setItem("notes", JSON.stringify(filteredNotes));
+      updateNotes();
+    }
+  });
+
+  function handleNoteTextRightClick(event, noteText) {
+    event.preventDefault();
+    const contextMenu = document.getElementById("context-menu");
+    contextMenu.style.display = "block";
+    contextMenu.style.left = event.pageX + "px";
+    contextMenu.style.top = event.pageY + "px";
+    contextMenu.style.zIndex = 1000;
+    contextMenu.querySelector("#edit-note").onclick = () => {
+      editNote(noteText);
+      contextMenu.style.display = "none";
+    };
+    document.addEventListener("click", () => {
+      contextMenu.style.display = "none";
+    });
+  }
+
+  function editNote(noteText) {
+    const noteId = noteText.data("id");
+    const currentText = noteText.text();
+    const newText = prompt("Edit note:", currentText);
+    if (newText && newText !== currentText) {
+      const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+      const noteIndex = notes.findIndex((note) => note.id === noteId);
+      if (noteIndex > -1) {
+        notes[noteIndex].note = newText;
+        localStorage.setItem("notes", JSON.stringify(notes));
+        updateNotes();
+      }
+    }
+  }
+
+  updateNotes();
+
+  // snippets  //
+  function handleSnippetTitleRightClick(event, snippetTitle) {
+    event.preventDefault();
+    const contextMenu = document.getElementById("context-menu");
+    contextMenu.style.display = "block";
+    contextMenu.style.left = event.pageX + "px";
+    contextMenu.style.top = event.pageY + "px";
+    contextMenu.style.zIndex = 1000;
+    contextMenu.querySelector("#edit-note").onclick = () => {
+      editSnippet(snippetTitle);
+      contextMenu.style.display = "none";
+    };
+    document.addEventListener("click", () => {
+      contextMenu.style.display = "none";
+    });
+  }
+
+  function handleSnippetCodeRightClick(event, snippetCode) {
+    event.preventDefault();
+    const contextMenu = document.getElementById("context-menu");
+    contextMenu.style.display = "block";
+    contextMenu.style.left = event.pageX + "px";
+    contextMenu.style.top = event.pageY + "px";
+    contextMenu.style.zIndex = 1000;
+    contextMenu.querySelector("#edit-note").onclick = () => {
+      editSnippetContent(snippetCode);
+      contextMenu.style.display = "none";
+    };
+    document.addEventListener("click", () => {
+      contextMenu.style.display = "none";
+    });
+  }
+
+  function editSnippet(snippetTitle) {
+    const snippetId = snippetTitle.data("id");
+    const currentTitle = snippetTitle.text();
+    const newTitle = prompt("Edit snippet title:", currentTitle);
+    if (newTitle && newTitle !== currentTitle) {
+      const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+      const snippetIndex = snippets.findIndex((snippet) => snippet.id === snippetId);
+      if (snippetIndex > -1) {
+        snippets[snippetIndex].title = newTitle;
+        localStorage.setItem("snippets", JSON.stringify(snippets));
+        displaySnippets();
+      }
+    }
+  }
+
+  function editSnippetContent(snippetCode) {
+    const snippetId = snippetCode.data("id");
+    const currentCode = snippetCode.text();
+
+    // Show the modal
+    const editSnippetModal = $("#edit-snippet-modal");
+    editSnippetModal.removeClass("hidden");
+
+    // Set the current code in the textarea
+    const editSnippetTextarea = $("#edit-snippet-textarea");
+    editSnippetTextarea.val(currentCode);
+
+    // Remove previous event handlers
+    $("#edit-snippet-save-btn").off("click");
+    $("#edit-snippet-cancel-btn").off("click");
+
+    // Handle save button click
+    $("#edit-snippet-save-btn").on("click", function () {
+      const newCode = editSnippetTextarea.val();
+      if (newCode && newCode !== currentCode) {
+        const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+        const snippetIndex = snippets.findIndex((snippet) => snippet.id === snippetId);
+        if (snippetIndex > -1) {
+          snippets[snippetIndex].code = newCode;
+          localStorage.setItem("snippets", JSON.stringify(snippets));
+          displaySnippets();
+        }
+      }
+      // Hide the modal
+      editSnippetModal.addClass("hidden");
+    });
+
+    // Handle cancel button click
+    $("#edit-snippet-cancel-btn").on("click", function () {
+      // Hide the modal
+      editSnippetModal.addClass("hidden");
+    });
+  }
+
+  $("#snippet-form").submit(function (event) {
+    event.preventDefault();
+    const title = $("#snippet-title").val();
+    const code = $("#snippet-code").val();
+    $("#snippet-title").val("");
+    $("#snippet-code").val("");
+    const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+    snippets.push({ user_slug, title, code, id: generateSnippetId() });
+    localStorage.setItem("snippets", JSON.stringify(snippets));
+    displaySnippets();
+  });
+  $("#snippets-list").on("click", ".delete-snippet", function () {
+    const snippetId = $(this).data("id");
+    if (confirm("Are you sure you want to delete this snippet? This cannot be undone.")) {
+      const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+      const filteredSnippets = snippets.filter((snippet) => snippet.id !== snippetId);
+      localStorage.setItem("snippets", JSON.stringify(filteredSnippets));
+      displaySnippets();
+    }
+  });
+
+   function displaySnippets() {
+      const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+      const snippetsList = $("#snippets-list");
+      snippetsList.empty();
+    
+      // Sort snippets based on their pinned property
+       snippets.sort((a, b) => {
+          if (a.pinned && !b.pinned) return -1;
+          if (!a.pinned && b.pinned) return 1;
+          if (a.lastCopied && !b.lastCopied) return -1;
+          if (!a.lastCopied && b.lastCopied) return 1;
+          if (a.lastCopied > b.lastCopied) return -1;
+          if (a.lastCopied < b.lastCopied) return 1;
+          return 0;
+        });
+    
+      snippets.forEach(function (snippet) {
+        const listItem = $('<li></li>');
+        const snippetTitle = $('<span class="snippet-title" data-id="' + snippet.id + '"></span>');
+        snippetTitle.text(snippet.title);
+        const snippetCode = $('<pre class="snippet-code" data-id="' + snippet.id + '"></pre>');
+        snippetCode.text(snippet.code);
+        snippetTitle.on("contextmenu", function (e) {
+          e.preventDefault();
+          handleSnippetTitleRightClick(e, $(this));
+        });
+        snippetCode.on("contextmenu", function (e) {
+          e.preventDefault();
+          handleSnippetCodeRightClick(e, $(this));
+        });
+        listItem.append(snippetTitle);
+        listItem.append(snippetCode);
+        listItem.append('<button class="delete-snippet align-middle" data-id="' + snippet.id + '">Delete</button>');
+        listItem.append('<button class="toggle-pin-snippet align-middle" data-id="' + snippet.id + '">' + (snippet.pinned ? 'Unpin' : 'Pin') + '</button>'); // Add the pin button
+        snippetsList.append(listItem);
+      });
+    }
+
+  $("#snippets-list").on('click', '.toggle-pin-snippet', function() {
+    const snippetId = $(this).data('id');
+    const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+    const snippetIndex = snippets.findIndex((snippet) => snippet.id === snippetId);
+    if (snippetIndex > -1) {
+      snippets[snippetIndex].pinned = !snippets[snippetIndex].pinned;
+      localStorage.setItem("snippets", JSON.stringify(snippets));
+      displaySnippets();
+    }
+  });
+
+
+
+  $("#snippets-list").on('click', '.snippet-code', function() {
+  const code = $(this).text();
+  const snippetId = $(this).data('id');
+  navigator.clipboard.writeText(code).then(() => {
+    replit.messages.showConfirm('Snippet copied', 2321);
+
+    // Update the lastCopied property for the copied snippet
+    const snippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+    const snippetIndex = snippets.findIndex((snippet) => snippet.id === snippetId);
+    if (snippetIndex > -1) {
+      snippets[snippetIndex].lastCopied = Date.now();
+      localStorage.setItem("snippets", JSON.stringify(snippets));
+      displaySnippets();
+    }
+  });
+});
+
+  function filterSnippets() {
+    const searchText = $("#snippet-search").val().toLowerCase();
+
+    $("#snippets-list li").each(function () {
+      const snippetTitle = $(this).find(".snippet-title").text().toLowerCase();
+      const snippetCode = $(this).find(".snippet-code").text().toLowerCase();
+
+      if (snippetTitle.includes(searchText) || snippetCode.includes(searchText)) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  }
+
+  $("#snippet-search").on("input", filterSnippets);
+
+  displaySnippets();
+
+  $("#mode-switch-btn").on('click', function() {
+    const currentMode = $(this).text();
+    if (currentMode === 'Switch to Snippet Manager') {
+      $(this).text('Switch to Notes');
+      $("#mode").text("Snippets")
+      $("#note-form").addClass('hidden');
+      $("#notes-list").addClass('hidden');
+      $("#snippet-form").removeClass('hidden');
+      $("#snippets-list").removeClass('hidden');
+      $("#snippet-search").removeClass('hidden');
+    } else {
+      $(this).text('Switch to Snippet Manager');
+      $("#mode").text("Notes")
+      $("#note-form").removeClass('hidden');
+      $("#notes-list").removeClass('hidden');
+      $("#snippet-form").addClass('hidden');
+      $("#snippets-list").addClass('hidden');
+      $("#snippet-search").addClass('hidden');
+    }
+  });
+})();
+    </script>
+</head>
+<body>
+  <button id="mode-switch-btn" class="btn btn-blue">Switch to Snippet Manager</button>
+  <div class="heading-container">
+    <div class="heading">
+      <h1 class="main-heading">ReplNotes</h1>
+      <p><span id='mode'>Notes</span> for <span id="slughere"></span></p>
+    </div>
+  </div>
+  <section class="content-container">
+    <form id="note-form">
+      <div>
+        <label for="note">Note:</label>
+        <input maxlength="1000" type="text" id="note" title="Don't share sensitive information" name="note" required>
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit">Store Note</button>
+      </div>
+    </form>
+    <form id="snippet-form" class="hidden">
+      <div>
+        <label for="snippet-title">Title:</label>
+        <input style='width:100%' type="text" id="snippet-title" name="snippet-title" maxlength="120" required>
+      </div>
+      <div>
+        <label for="snippet-code">Code:</label>
+        <textarea title="Don't share sensitive information" name="note" style='width:100%' id="snippet-code" name="snippet-code" rows="4" maxlength="7000" required></textarea>
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit">Store Snippet</button>
+      </div>
+    </form>
+    <hr>
+    <div>
+        <input class='hidden' type="text" id="snippet-search" placeholder="Search snippets..." />
+    </div>
+    <ul id="notes-list" class="list-container"></ul>
+    <ul id="snippets-list" class="list-container hidden"></ul>
+  </section>
+  <div id="context-menu" class="context-menu">
+  <ul>
+    <li id="edit-note">Edit Note</li>
+  </ul>
+</div>
+  <div id="edit-snippet-modal" class="edit-snippet-modal hidden">
+  <div class="edit-snippet-modal-content">
+    <h2>Edit Snippet Content</h2>
+    <p>Works best when extension is opened with a big pane.</p>
+    <textarea id="edit-snippet-textarea" rows="10" cols="50"></textarea>
+    <button id="edit-snippet-save-btn">Save</button>
+    <button id="edit-snippet-cancel-btn">Cancel</button>
+  </div>
+</div>
+</body>
+  <script>
+    
+function filterSnippets() {
+  const searchText = $("#snippet-search").val().toLowerCase();
+
+  $("#snippets-list li").each(function () {
+    const snippetTitle = $(this).find(".snippet-title").text().toLowerCase();
+    const snippetCode = $(this).find(".snippet-code").text().toLowerCase();
+
+    if (snippetTitle.includes(searchText) || snippetCode.includes(searchText)) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
+}
+
+$("#snippet-search").on("input", filterSnippets);
+  </script>
+</html>
