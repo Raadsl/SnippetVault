@@ -346,7 +346,6 @@ async function filterSnippets() {
 $("#snippet-search").on("input", filterSnippets);
 $("#snippet-filter-language").on("change", filterSnippets); 
 replit.session.onActiveFileChange(filterSnippets)
-})();
 
 $("#controls-explanation-btn").on("click", function () {
   $("#instructions-modal").removeClass("hidden");
@@ -368,7 +367,6 @@ $("#delete-all-data-btn").on("click", function () {
     localStorage.removeItem("notes")
     localStorage.removeItem("snippets")
     displaySnippets()
-    location.reload()
   } else {
     displaySnippets()
   }
@@ -402,13 +400,14 @@ async function importSnippets() {
         replit.messages.showNotice("Invalid JSON file format.", 2000);
       }
     } catch (error) {
-      replit.messages.showNotice("Error importing snippets: " + error.message, 2000);
+      replit.messages.showNotice("Error importing snippets: " + error.message, 4000);
     }
   };
   fileInput.click();
 }
 $("#export-snippets-btn").on("click", exportSnippets);
 $("#import-snippets-btn").on("click", importSnippets);
+})();
     </script>
 </head>
 <body>
