@@ -1327,3 +1327,25 @@ pre.hljs {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.pinned-button {
+  background-color: #FFD700;
+  border: 1px solid #FFD700;
+}
+.pinned-button i {
+  color: #5c5346;
+}
+.toggle-pin-snippet,
+.delete-snippet,
+.edit-code-snippet {
+  align-items: center;
+  justify-content: center;
+  height: 35px;
+  width: 35px;
+  padding: 0;
+}
+
+.toggle-pin-snippet i,
+.delete-snippet i,
+.edit-code-snippet i {
+  font-size: 14px;
+}

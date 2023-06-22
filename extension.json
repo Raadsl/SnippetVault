@@ -1,13 +1,13 @@
 {
-    "name": "ReplitNotes",
+    "name": "SnippetVault",
     "description": "Store notes and code snippets in your Repl, but without taking up space in your repl!",
     "version": "0",
-    "tags": ["utility", "notes", "todo", "QOL", "Raadsel", "tasks", "todo extension 2", "secure"],
+    "tags": ["utility", "snippets", "code", "QOL", "Raadsel", "tasks", "todo extension 2", "secure"],
     "icon": "icons/icon.png",
-    "website": "https://github.com/Raadsl/ReplitNotes",
-    "longDescription": "Keep track with what you still need to do! (probably a lot). ReplitNotes is a sequel to the Todo Extension from me. It has user-wide code snippets, a nicer UI, works better, and doesn't create files in your repl. The data gets stored in your localStorage. That's wayy better then before, doesn't take up any bytes in your repl, and your content is more secure!!\n\nUsage: Click a snippet to copy it, right click it to edit it. Click on a note to mark it as done, do it again to undo it. The rest speaks for itself using the buttons.\n\nOnce payed extensions are released I will release a paid version of this that uses an outside database so it will always work, even if you use a different browser",
+    "website": "https://github.com/Raadsl/SnippetVault",
+    "longDescription": "Stay on top of your tasks with SnippetVault, the successor to the Todo Extension. This upgraded version features user-wide code snippets, an improved UI, enhanced functionality, and no file creation in your repl. All data is stored in your localStorage, which is better than before, saving space in your repl and providing more secure content storage.\n\n\nUsage:\n1. Click a snippet to copy it, right-click to edit it.\n2. Click a note to mark it as done, click again to undo.\n3. Use the provided buttons for additional functionality.\n",
   "tools": [
-	  {"name": "ReplNotes", "handler":"/", "icon":"icons/icon.png"}
+	  {"name": "SnippetVault", "handler":"/", "icon":"icons/icon.png"}
   ],
   "coverImages": [
     {
