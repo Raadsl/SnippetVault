@@ -198,24 +198,48 @@
       function mapFileExtensionToLanguage(fileExt) {
         const extensionToLanguageMap = {
           "jsx": "javascript",
-          "tsx": "javascript",
+          "tsx": "typescript",
           "cjs": "javascript",
-          "ts": "javascript",
-          'js': 'javascript',
-          'py': 'python',
-          'java': 'java',
-          'cpp': 'cpp',
-          'c': 'c',
-          'cs': 'csharp',
-          'html': 'xml', //it doesnt detect html for some reason
-          'css': 'css',
-          'xml': 'xml',
-          "json": "swift",//also doesnt have json
+          "mjs": "javascript",
+          "js": "javascript",
+          "ts": "typescript",
+          "html": "xml",
+          "xml": "xml",
+          "svg": "xml",
+          "css": "css",
+          "scss": "scss",
+          "less": "less",
+          "styl": "stylus",
+          "java": "java",
+          "kt": "kotlin",
+          "groovy": "groovy",
+          "cpp": "cpp",
+          "hpp": "cpp",
+          "cc": "cpp",
+          "c": "c",
+          "h": "c",
+          "rs": "rust",
+          "php": "php",
+          "py": "python",
+          "rpy": "python",
+          "pyw": "python",
+          "cpy": "python",
+          "gyp": "python",
+          "gypi": "python",
+          "rb": "ruby",
+          "rbw": "ruby",
+          "rake": "ruby",
+          "gemspec": "ruby",
+          "podspec": "ruby",
+          "thor": "ruby",
+          "irb": "ruby",
           "swift": "swift",
-          "md": "txt",
-          "svg": "xml"
-          //!TODO add more
+          "go": "go",
+          "rs": "rust",
+          "dart": "dart",
+          "sql": "sql"
         };
+      
         return extensionToLanguageMap[fileExt] || 'txt';
       }
       $("#snippet-form").submit(function (event) {
@@ -423,7 +447,11 @@
       const notes = JSON.parse(localStorage.getItem("notes") || "{}");
       const filterByActiveLanguage = notes.filterByActiveLanguage || false;
       $("#snippet-filter-language").prop('checked', filterByActiveLanguage);
-    })();
+
+const code = "<p>Hello World</p>";
+const result = hljs.highlightAuto(code, ['xml', 'html', 'javascript', 'css']);
+console.log(result.language, result.value);
+})();
   </script>
 </head>
 
@@ -478,15 +506,24 @@
       <button id="edit-snippet-cancel-btn">Cancel</button>
       <select id="edit-snippet-language">
         <option value="javascript">JavaScript</option>
-        <option value="python">Python</option>
-        <option value="java">Java</option>
-        <option value="cpp">C++</option>
-        <option value="cs">C#</option>
-        <option value="c">C</option>
+        <option value="typescript">TypeScript</option>
         <option value="xml">XML/HTML</option>
         <option value="css">CSS</option>
+        <option value="scss">SCSS</option>
+        <option value="less">LESS</option>
+        <option value="stylus">Stylus</option>
+        <option value="java">Java</option>
+        <option value="kotlin">Kotlin</option>
+        <option value="groovy">Groovy</option>
+        <option value="cpp">C++</option>
+        <option value="c">C</option>
+        <option value="rust">Rust</option>
+        <option value="php">PHP</option>
+        <option value="python">Python</option>
+        <option value="ruby">Ruby</option>
         <option value="swift">Swift</option>
-        <option value="txt">Plain Text</option>
+        <option value="go">Go</option>
+        <option value="dart">Dart</option>
       </select>
     </div>
   </div>
