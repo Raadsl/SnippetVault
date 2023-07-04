@@ -1,11 +1,11 @@
 {
-    "name": "SnippetVault",
-    "description": "Store notes and code snippets in your Repl, but without taking up space in your repl!",
+    "name": "SnippetVault - store Snippets",
+    "description": "Store code snippets in your Repl, easily and without taking up space in your repl!",
     "version": "0",
     "tags": ["utility", "snippets", "code", "QOL", "Raadsel", "tasks", "todo extension 2", "secure"],
     "icon": "icons/icon.png",
     "website": "https://github.com/Raadsl/SnippetVault",
-    "longDescription": "Stay on top of your tasks with SnippetVault, the successor to the Todo Extension. This upgraded version features user-wide code snippets, an improved UI, enhanced functionality, and no file creation in your repl. All data is stored in your localStorage, which is better than before, saving space in your repl and providing more secure content storage.\n\n\nUsage:\n1. Click a snippet to copy it, right-click to edit it.\n2. Click a note to mark it as done, click again to undo.\n3. Use the provided buttons for additional functionality.\n",
+    "longDescription": "# SnippetVault\nStay on top of your tasks with SnippetVault, the successor to the Todo Extension. This upgraded version features user-wide code snippets, an improved UI, enhanced functionality, and no file creation in your repl. All data is stored in your localStorage, which is better than before, saving space in your repl and providing more secure content storage.\n\n\n## Controls:![Control preview](https://r.aadsel.repl.co/i/zkLYyg.png)",
   "tools": [
 	  {"name": "SnippetVault", "handler":"/", "icon":"icons/icon.png"}
   ],

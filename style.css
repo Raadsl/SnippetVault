@@ -1094,11 +1094,7 @@ h1 {
   font-size: 2rem;
   color: var(--foreground-dimmer);
 }
-#note-form {
-  background-color: var(--background-higher);
-  padding: 5px;
-  border-radius: 5px;
-}
+
 #snippet-form {
   background-color: var(--background-higher);
   padding: 10px;
