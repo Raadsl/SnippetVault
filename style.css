@@ -1282,7 +1282,7 @@ pre.hljs {
 }
 .click-to-copy {
   color: var(--foreground-dimmest);
-  font-size: 12px;
+  font-size: 14px;
 }
 .header-row {
   display: flex;
