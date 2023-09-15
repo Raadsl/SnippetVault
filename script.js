@@ -396,27 +396,29 @@
       }
 
       async function importSnippets() {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = ".json";
-        fileInput.onchange = async (event) => {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = ".json";
+      fileInput.onchange = async (event) => {
           const file = event.target.files[0];
           const fileContent = await file.text();
           try {
-            const importedSnippets = JSON.parse(fileContent);
-            if (Array.isArray(importedSnippets)) {
-              localStorage.setItem("snippets", JSON.stringify(importedSnippets));
-              displaySnippets();
-              replit.messages.showNotice("Snippets imported successfully!", 2000);
-            } else {
-              replit.messages.showNotice("Invalid JSON file format.", 2000);
-            }
+              const importedSnippets = JSON.parse(fileContent);
+              if (Array.isArray(importedSnippets)) {
+                  const existingSnippets = JSON.parse(localStorage.getItem("snippets")) || [];
+                  const allSnippets = existingSnippets.concat(importedSnippets);
+                  localStorage.setItem("snippets", JSON.stringify(allSnippets));
+                  displaySnippets();
+                  replit.messages.showNotice("Snippets imported successfully!", 2000);
+              } else {
+                  replit.messages.showNotice("Invalid JSON file format.", 2000);
+              }
           } catch (error) {
-            replit.messages.showNotice("Error importing snippets: " + error.message, 4000);
+              replit.messages.showNotice("Error importing snippets: " + error.message, 4000);
           }
-        };
-        fileInput.click();
-      }
+      };
+      fileInput.click();
+  }
       $("#export-snippets-btn").on("click", exportSnippets);
       $("#import-snippets-btn").on("click", importSnippets);
 
