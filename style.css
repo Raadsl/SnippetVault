@@ -625,6 +625,7 @@ input[type="text"], input[type="url"], input[type="number"], input[type="email"]
 
 textarea {
   height: 150px;
+  font-family: 'Fira Code', monospace;
 }
 
 input[type="text"]::placeholder, input[type="url"]::placeholder, input[type="number"]::placeholder, input[type="email"]::placeholder, input[type="password"]::placeholder, inpuy[type="time"]::placeholder, input[type="date"]::placeholder, input[type="datetime-local"]::placeholder, input[type="month"]::placeholder, input[type="week"]::placeholder, input[type="search"]::placeholder, input[type="tel"]::placeholder, textarea::placeholder, select::placeholder {
@@ -1207,11 +1208,17 @@ li {
 .hidden {
   display: none;
 }
+
 .snippet-title {
   font-weight: bold;
   cursor: pointer;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+
 .snippet-code {
+  font-family: 'Fira Code', monospace;
+  font-size: 15px;
   background-color: var(--background-root);
   padding: 5px;
   border-radius: 5px;
@@ -1219,15 +1226,11 @@ li {
   white-space: pre-wrap;
   word-wrap: break-word;
   max-height: 300px;
-  overflow-y: auto;
-  border-color: var(--accent-primary-dimmer);
+  overflow: auto;
   border: 2px solid var(--outline-default);
   width: 100%;
 }
-[data-done="true"] {
-  text-decoration: line-through;
-  color: #999;
-}
+
 pre.hljs {
   background-color: var(--background-root);
 }
@@ -1237,11 +1240,13 @@ pre.hljs {
 .hljs-comment,
 .hljs-quote {
   color: var(--foreground-dimmer);
+  font-style: italic;
 }
-.hljs-keyword,
+.hljs-deletion,
+.hljs-name,
+.hljs-section,
 .hljs-selector-tag,
-.hljs-literal,
-.hljs-name {
+.hljs-subst {
   color: var(--accent-primary-default);
 }
 .hljs-variable,
@@ -1250,29 +1255,128 @@ pre.hljs {
   color: var(--foreground-default);
 }
 .hljs-string,
-.hljs-regexp {
+.hljs-regexp,
+.hljs-literal {
   color: var(--foreground-default);
 }
-.hljs-number {
+.hljs-attr,
+.hljs-number,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-pseudo,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable {
   color: var(--foreground-default);
 }
-.hljs-meta,
-.hljs-meta .hljs-keyword {
-  color: var(--foreground-default);
+.hljs-keyword,
+.hljs-operator{
+  color: var(--accent-negative-dimmer);
 }
+
+.hljs-bullet,
+.hljs-link,
+.hljs-selector-id,
+.hljs-symbol,
 .hljs-title,
-.hljs-attr {
-  color: var(--foreground-default);
+.hljs-built_in {
+  color: var(--yellow-stronger) !important;
 }
+
+.hljs-meta {
+  color: var(--foreground-default) !important;
+}
+
+.hljs-params {
+  color: var(--green-stronger) !important;
+}
+
+.hljs-doctag,
+.hljs-formula {
+  color: var(--purple-stronger);
+}
+
+.hljs-property {
+  color: var(--pink-stronger);
+}
+
 .hljs-emphasis {
-  font-style: italic;
+    font-style: italic;
 }
 .hljs-strong {
-  font-weight: bold;
+    font-weight: 700;
 }
-.hljs {
-  background-color: inherit;
+.hljs-link {
+    text-decoration: underline;
 }
+
+/*
+.hljs-pattern-match {
+    color: #f92672;
+}
+.hljs-pattern-match .hljs-constructor {
+    color: #61aeee;
+}
+.hljs-function {
+    color: #61aeee;
+}
+.hljs-function .hljs-params {
+    color: #a6e22e;
+}
+.hljs-function .hljs-params .hljs-typing {
+    color: #fd971f;
+}
+.hljs-module-access .hljs-module {
+    color: #7e57c2;
+}
+.hljs-constructor {
+    color: #e2b93d;
+}
+.hljs-constructor .hljs-string {
+    color: #9ccc65;
+}
+.hljs-comment,
+.hljs-quote {
+    color: #b18eb1;
+    font-style: italic;
+}
+.hljs-doctag,
+.hljs-formula {
+    color: #c678dd;
+}
+.hljs-deletion,
+.hljs-name,
+.hljs-section,
+.hljs-selector-tag,
+.hljs-subst {
+    color: #66b0ff;
+}
+.hljs-literal {
+    color: #56b6c2;
+}
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta-string,
+.hljs-regexp,
+.hljs-string {
+    color: #e55d5d;
+}
+.hljs-built_in,
+.hljs-class .hljs-title {
+    color: #e6c07b;
+}
+.hljs-attr,
+.hljs-number,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-pseudo,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable {
+    color: #a3d0ff;
+}
+
+*/
 #snippet-search {
   margin-bottom: 10px;
 }
@@ -1281,7 +1385,7 @@ pre.hljs {
 }
 .click-to-copy {
   color: var(--foreground-dimmest);
-  font-size: 14px;
+  font-size: 0.8em;
 }
 .header-row {
   display: flex;

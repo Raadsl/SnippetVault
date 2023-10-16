@@ -7,10 +7,10 @@
   <title>SnippetVault</title>
   <link href="/style.css" rel="stylesheet" type="text/css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://unpkg.com/@replit/extensions@1.8.0/dist/index.global.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+  <script src="https://unpkg.com/@replit/extensions@1.9.0/dist/index.global.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
   <script type='module' src='script.js'></script>
 </head>
 <body>
@@ -29,12 +29,12 @@
     <form id="snippet-form" class="">
       <div>
         <label for="snippet-title">Title:</label>
-        <input style='width:100%' type="text" id="snippet-title" name="snippet-title" maxlength="120" required>
+        <input style='width:100%' type="text" id="snippet-title" name="snippet-title" maxlength="64" required>
       </div>
       <div>
         <label for="snippet-code">Code:</label>
-        <textarea title="Don't share sensitive information" name="note" style='width:100%' id="snippet-code"
-          name="snippet-code" rows="4" maxlength="15000" required></textarea>
+        <textarea class='usetabs' name="note" style='width:100%' id="snippet-code"
+          name="snippet-code" rows="4" maxlength="4000" required></textarea>
       </div>
       <div>
         <button class="btn btn-primary" type="submit" style='width:100%;'>Store Snippet</button>
@@ -52,37 +52,43 @@
   </section>
   <div id="context-menu" class="context-menu">
     <ul>
-      <li id="edit-note">Edit Note</li>
+      <li id="edit-content">Edit</li>
     </ul>
   </div>
   <div id="edit-snippet-modal" class="edit-snippet-modal hidden">
     <div class="edit-snippet-modal-content">
       <h2>Edit Content</h2>
-      <p>Works best when extension is opened with a big pane.</p>
-      <textarea id="edit-snippet-textarea" rows="30" cols="100"></textarea>
+      <input type="text" id="edit-snippet-title" maxlength="64" placeholder="Title" />
+      <textarea class='usetabs' id="edit-snippet-textarea" rows="30" cols="100" maxlength="4000"></textarea>
       <button id="edit-snippet-save-btn">Save</button>
       <button id="edit-snippet-cancel-btn">Cancel</button>
-      <select id="edit-snippet-language">
-        <option value="javascript">JavaScript</option>
-        <option value="typescript">TypeScript</option>
-        <option value="xml">XML/HTML</option>
-        <option value="css">CSS</option>
-        <option value="scss">SCSS</option>
-        <option value="less">LESS</option>
-        <option value="stylus">Stylus</option>
-        <option value="java">Java</option>
-        <option value="kotlin">Kotlin</option>
-        <option value="groovy">Groovy</option>
-        <option value="cpp">C++</option>
-        <option value="c">C</option>
-        <option value="rust">Rust</option>
-        <option value="php">PHP</option>
-        <option value="python">Python</option>
-        <option value="ruby">Ruby</option>
-        <option value="swift">Swift</option>
-        <option value="go">Go</option>
-        <option value="dart">Dart</option>
-      </select>
+        <select id="edit-snippet-language">
+          <option value="bash">Bash</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+          <option value="css">CSS</option>
+          <option value="dart">Dart</option>
+          <option value="go">Go</option>
+          <option value="graphql">GraphQL</option>
+          <option value="groovy">Groovy</option>
+          <option value="java">Java</option>
+          <option value="javascript">JavaScript</option>
+          <option value="kotlin">Kotlin</option>
+          <option value="less">LESS</option>
+          <option value="nix">Nix</option>
+          <option value="php">PHP</option>
+          <option value="plain">Plain text</option>
+          <option value="python">Python</option>
+          <option value="ruby">Ruby</option>
+          <option value="rust">Rust</option>
+          <option value="scss">SCSS</option>
+          <option value="sql">SQL</option>
+          <option value="stylus">Stylus</option>
+          <option value="swift">Swift</option>
+          <option value="typescript">TypeScript</option>
+          <option value="yaml">YAML</option>
+          <option value="xml">XML/HTML</option>
+        </select>
     </div>
   </div>
   <div id="instructions-modal" class="instructions-modal hidden">

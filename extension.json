@@ -4,7 +4,7 @@
     "tags": ["utility", "snippets", "code", "QOL", "Raadsel", "tasks", "todo extension 2", "secure"],
     "icon": "icons/icon.png",
     "website": "https://github.com/Raadsl/SnippetVault",
-    "longDescription": "# SnippetVault\nStay on top of your tasks with SnippetVault, the successor to the Todo Extension. This upgraded version features user-wide code snippets, an improved UI, enhanced functionality, and no file creation in your repl. All data is stored in your localStorage, which is better than before, saving space in your repl and providing more secure content storage.\n\n\n## Controls:![Control preview](https://extension-33a91a8f-b3df-4337-a084-d5efdb39049d.raadsel.repl.co/icons/controls-preview.png)",
+    "longDescription": "# SnippetVault\nStay on top of your tasks with SnippetVault. This extension features user-wide code snippets, an improved UI, enhanced functionality, and no file creation in your repl. All data is stored in your localStorage, which is better than before, saving space in your repl and providing more secure content storage.\n\n\n## Controls:![Control preview](https://extension-33a91a8f-b3df-4337-a084-d5efdb39049d.raadsel.repl.co/icons/controls-preview.png)",
   "tools": [
 	  {"name": "SnippetVault", "handler":"/", "icon":"icons/icon.png"}
   ],
