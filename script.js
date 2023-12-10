@@ -103,7 +103,7 @@ textarea.addEventListener('keydown', function(e) {
         contextMenu.style.left = event.pageX + "px";
         contextMenu.style.top = event.pageY + "px";
         contextMenu.style.zIndex = 1000;
-        contextMenu.querySelector("#edit-note").onclick = () => {
+        contextMenu.querySelector("#edit-content").onclick = () => {
           editSnippet(snippetTitle);
           contextMenu.style.display = "none";
         };
@@ -119,7 +119,7 @@ textarea.addEventListener('keydown', function(e) {
         contextMenu.style.left = event.pageX + "px";
         contextMenu.style.top = event.pageY + "px";
         contextMenu.style.zIndex = 1000;
-        contextMenu.querySelector("#edit-note").onclick = () => {
+        contextMenu.querySelector("#edit-content").onclick = () => {
           editSnippetContent(snippetCode);
           contextMenu.style.display = "none";
         };
@@ -378,9 +378,6 @@ textarea.addEventListener('keydown', function(e) {
         }
         const searchText = $("#snippet-search").val().toLowerCase();
         const filterLanguage = $("#snippet-filter-language").is(":checked");
-        const notes = JSON.parse(localStorage.getItem("notes") || "{}");
-        notes.filterByActiveLanguage = filterLanguage;
-        localStorage.setItem("notes", JSON.stringify(notes));
 
 
         $("#snippets-list li").each(function () {
@@ -420,7 +417,6 @@ textarea.addEventListener('keydown', function(e) {
       });
       $("#delete-all-data-btn").on("click", function () {
         if (confirm("Are you sure you want to delete all the data? This action cannot be undone.")) {
-          localStorage.removeItem("notes")
           localStorage.removeItem("snippets")
           replit.messages.showNotice("All snippets were successfully deleted!", 3000)
           displaySnippets()
@@ -467,7 +463,8 @@ textarea.addEventListener('keydown', function(e) {
       $("#export-snippets-btn").on("click", exportSnippets);
       $("#import-snippets-btn").on("click", importSnippets);
 
-      const notes = JSON.parse(localStorage.getItem("notes") || "{}");
-      const filterByActiveLanguage = notes.filterByActiveLanguage || false;
+      const snippets = JSON.parse(localStorage.getItem("snippets") || "{}");
+      const filterByActiveLanguage = snippets.filterByActiveLanguage || false;
       $("#snippet-filter-language").prop('checked', filterByActiveLanguage);
+      
 })();

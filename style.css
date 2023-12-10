@@ -626,6 +626,7 @@ input[type="text"], input[type="url"], input[type="number"], input[type="email"]
 textarea {
   height: 150px;
   font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
 }
 
 input[type="text"]::placeholder, input[type="url"]::placeholder, input[type="number"]::placeholder, input[type="email"]::placeholder, input[type="password"]::placeholder, inpuy[type="time"]::placeholder, input[type="date"]::placeholder, input[type="datetime-local"]::placeholder, input[type="month"]::placeholder, input[type="week"]::placeholder, input[type="search"]::placeholder, input[type="tel"]::placeholder, textarea::placeholder, select::placeholder {
@@ -1126,6 +1127,7 @@ button {
 button:hover {
   background-color: var(--accent-primary-stronger);
 }
+
 #get-notes {
   margin-top: 10px;
 }
@@ -1218,7 +1220,7 @@ li {
 
 .snippet-code {
   font-family: 'Fira Code', monospace;
-  font-size: 15px;
+  font-size: 0.7em;
   background-color: var(--background-root);
   padding: 5px;
   border-radius: 5px;
@@ -1229,6 +1231,7 @@ li {
   overflow: auto;
   border: 2px solid var(--outline-default);
   width: 100%;
+  line-height: 1.2;
 }
 
 pre.hljs {
