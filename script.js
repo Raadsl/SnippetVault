@@ -91,9 +91,6 @@ textarea.addEventListener('keydown', function(e) {
       }
 
       const user_slug = await getUserSlug();
-      const user = await getUser();
-
-      let firstime = true
 
       // snippets  //
       function handleSnippetTitleRightClick(event, snippetTitle) {
@@ -221,7 +218,8 @@ textarea.addEventListener('keydown', function(e) {
           "groovy": "groovy",
           "cpp": "cpp",
           "hpp": "cpp",
-          "cc": "cpp",
+          "ccp": "cpp",
+          "ino": "cpp",
           "c": "c",
           "h": "c",
           "rs": "rust",

@@ -935,6 +935,11 @@ code {
   margin-right: 8px;
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 .footer {
   background-color: var(--background-default);
   color: var(--foreground-default);
@@ -942,6 +947,7 @@ code {
   font-size: 19px;
   font-weight: 600;
   padding: 15px;
+  animation: slideUp 0.5s ease-out;
 }
 
 iframe {
